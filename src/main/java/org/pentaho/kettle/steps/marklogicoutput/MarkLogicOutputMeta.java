@@ -29,6 +29,7 @@ import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.database.marklogic.MarkLogicDatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -38,6 +39,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
@@ -56,7 +58,7 @@ import org.w3c.dom.Node;
 image = "marklogic_output.svg",
  i18nPackageName = "org.pentaho.kettle.steps.marklogicoutput", name = "MarkLogicOutput.Name",
  description = "MarkLogicOutput.Description",
- categoryDescription = "i18n:org.pentaho.di.steps:StepCategory.Category.BigData" )
+ categoryDescription = "BaseStep.Category.BigData" )
 /**
  * Metadata (configuration) holding class for the MarkLogic output step
  * 
@@ -70,6 +72,11 @@ public class MarkLogicOutputMeta extends BaseStepMeta implements StepMetaInterfa
   public final String FORMAT_XML = "xml";
   public final String FORMAT_TEXT = "text";
   public final String FORMAT_BINARY = "binary";
+
+  /**
+   * The connection to the database
+   */
+  private DatabaseMeta databaseMeta;
 
   private String host = "localhost";
   private int port = 8000;
@@ -87,7 +94,7 @@ public class MarkLogicOutputMeta extends BaseStepMeta implements StepMetaInterfa
    * Loads step configuration from PDI ktr file XML
    */
   public void loadXML(Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore) throws KettleXMLException {
-    readData(stepnode);
+    readData(stepnode,databases);
   }
 
   @Override
@@ -99,12 +106,11 @@ public class MarkLogicOutputMeta extends BaseStepMeta implements StepMetaInterfa
     return retval;
   }
   
-  @Override
   /**
    * Sets default metadata configuration
    */
   public void setDefault() {
-    // empty concrete method
+    databaseMeta = null;
   }
 
   @Override
@@ -118,14 +124,30 @@ public class MarkLogicOutputMeta extends BaseStepMeta implements StepMetaInterfa
   }
 
   /**
+   * @return Returns the database.
+   */
+  public DatabaseMeta getDatabaseMeta() {
+    return databaseMeta;
+  }
+
+  /**
+   * @param database
+   *          The database to set.
+   */
+  public void setDatabaseMeta(DatabaseMeta database) {
+    this.databaseMeta = database;
+  }
+
+  /**
    * Actually read the XML stream (used by loadXML())
    */
-  private void readData(Node entrynode) throws KettleXMLException {
+  private void readData(Node entrynode, List<? extends SharedObjectInterface> databases) throws KettleXMLException {
     try {
-      host = XMLHandler.getTagValue(entrynode, "host");
-      port = XMLHandler.getTagValue(entrynode, "port");
-      username = XMLHandler.getTagValue(entrynode, "username");
-      password = XMLHandler.getTagValue(entrynode, "password");
+      //host = XMLHandler.getTagValue(entrynode, "host");
+      //port = Integer.parseInt(XMLHandler.getTagValue(entrynode, "port"));
+      //username = XMLHandler.getTagValue(entrynode, "username");
+      //password = XMLHandler.getTagValue(entrynode, "password");
+      databaseMeta = DatabaseMeta.findDatabase(databases, XMLHandler.getTagValue(entrynode, "connection"));
       collection = XMLHandler.getTagValue(entrynode, "collection");
       formatField = XMLHandler.getTagValue(entrynode, "formatField");
       mimeTypeField = XMLHandler.getTagValue(entrynode, "mimeTypeField");
@@ -142,10 +164,12 @@ public class MarkLogicOutputMeta extends BaseStepMeta implements StepMetaInterfa
    */
   public String getXML() {
     StringBuffer retval = new StringBuffer(300);
-    retval.append("      ").append(XMLHandler.addTagValue("host", host));
-    retval.append("      ").append(XMLHandler.addTagValue("port", port));
-    retval.append("      ").append(XMLHandler.addTagValue("username", username));
-    retval.append("      ").append(XMLHandler.addTagValue("password", password));
+    retval.append("    " + XMLHandler.addTagValue("connection", databaseMeta == null ? "" : databaseMeta.getName()));
+
+    //retval.append("      ").append(XMLHandler.addTagValue("host", host));
+    //retval.append("      ").append(XMLHandler.addTagValue("port", port));
+    //retval.append("      ").append(XMLHandler.addTagValue("username", username));
+    //retval.append("      ").append(XMLHandler.addTagValue("password", password));
     retval.append("      ").append(XMLHandler.addTagValue("collection", collection));
     retval.append("      ").append(XMLHandler.addTagValue("formatField", formatField));
     retval.append("      ").append(XMLHandler.addTagValue("mimeTypeField", mimeTypeField));
@@ -163,10 +187,11 @@ public class MarkLogicOutputMeta extends BaseStepMeta implements StepMetaInterfa
       throws KettleException {
 
     try {
-      host = rep.getJobEntryAttributeString(id_step, "host");
-      port = (int)rep.getJobEntryAttributeInteger(id_step, "port");
-      username = rep.getJobEntryAttributeString(id_step, "username");
-      password = rep.getJobEntryAttributeString(id_step, "password");
+      //host = rep.getJobEntryAttributeString(id_step, "host");
+      //port = (int)rep.getJobEntryAttributeInteger(id_step, "port");
+      //username = rep.getJobEntryAttributeString(id_step, "username");
+      //password = rep.getJobEntryAttributeString(id_step, "password");
+      databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);
       collection = rep.getJobEntryAttributeString(id_step, "collection");
       formatField = rep.getJobEntryAttributeString(id_step, "formatField");
       mimeTypeField = rep.getJobEntryAttributeString(id_step, "mimeTypeField");
@@ -186,10 +211,11 @@ public class MarkLogicOutputMeta extends BaseStepMeta implements StepMetaInterfa
   public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step)
       throws KettleException {
     try {
-      rep.saveJobEntryAttribute(id_transformation, getObjectId(), "host", host);
-      rep.saveJobEntryAttribute(id_transformation, getObjectId(), "port", port);
-      rep.saveJobEntryAttribute(id_transformation, getObjectId(), "username", username);
-      rep.saveJobEntryAttribute(id_transformation, getObjectId(), "password", password);
+      rep.saveDatabaseMetaStepAttribute(id_transformation, id_step, "id_connection", databaseMeta);
+      //rep.saveJobEntryAttribute(id_transformation, getObjectId(), "host", host);
+      //rep.saveJobEntryAttribute(id_transformation, getObjectId(), "port", port);
+      //rep.saveJobEntryAttribute(id_transformation, getObjectId(), "username", username);
+      //rep.saveJobEntryAttribute(id_transformation, getObjectId(), "password", password);
       rep.saveJobEntryAttribute(id_transformation, getObjectId(), "collection", collection);
       rep.saveJobEntryAttribute(id_transformation, getObjectId(), "formatField", formatField);
       rep.saveJobEntryAttribute(id_transformation, getObjectId(), "mimeTypeField", mimeTypeField);
@@ -210,6 +236,14 @@ public class MarkLogicOutputMeta extends BaseStepMeta implements StepMetaInterfa
       IMetaStore metaStore) {
 
     CheckResult cr;
+    if (databaseMeta != null) {
+      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, "Connection exists", stepMeta);
+      remarks.add(cr);
+    } else {
+      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, "Please select or create a connection to use",
+          stepMeta);
+      remarks.add(cr);
+    }
 
     if (input.length > 0) {
       cr = new CheckResult(CheckResult.TYPE_RESULT_OK,
@@ -223,7 +257,6 @@ public class MarkLogicOutputMeta extends BaseStepMeta implements StepMetaInterfa
 
   }
 
-  @Override
   /**
    * Returns a new instance of this step
    */
@@ -232,15 +265,22 @@ public class MarkLogicOutputMeta extends BaseStepMeta implements StepMetaInterfa
     return new MarkLogicOutput(stepMeta, stepDataInterface, cnr, transMeta, trans);
   }
 
-  @Override
   /**
    * Returns a new instance of step data
    */
   public StepDataInterface getStepData() {
     return new MarkLogicOutputData();
   }
+  
+  public DatabaseMeta[] getUsedDatabaseConnections() {
+    if (databaseMeta != null) {
+      return new DatabaseMeta[] { databaseMeta };
+    } else {
+      return super.getUsedDatabaseConnections();
+    }
+  }
 
-
+/*
   public void setHost(String h) {
     host = h;
   }
@@ -272,7 +312,7 @@ public class MarkLogicOutputMeta extends BaseStepMeta implements StepMetaInterfa
   public String getPassword() {
     return password;
   }
-
+*/
   public void setCollection(String coll) {
     collection = coll;
   }

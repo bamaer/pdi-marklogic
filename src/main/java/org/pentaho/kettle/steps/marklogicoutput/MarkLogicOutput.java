@@ -22,6 +22,9 @@
 
 package org.pentaho.kettle.steps.marklogicoutput;
 
+import org.pentaho.di.core.database.marklogic.MarkLogicDatabaseMeta;
+import org.pentaho.di.core.database.marklogic.MarkLogicConnectionFactory.AuthScheme;
+import org.pentaho.di.core.database.marklogic.MarkLogicConnectionFactory;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -33,8 +36,12 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
 import com.marklogic.client.io.StringHandle;
+import com.marklogic.client.io.DocumentMetadataHandle;
+import com.marklogic.client.util.RequestLogger;
 import com.marklogic.client.DatabaseClientFactory;
 import com.marklogic.client.DatabaseClientFactory.DigestAuthContext;
+
+import java.io.ByteArrayOutputStream;
 
 /**
  * MarkLogic Document Output Step
@@ -68,30 +75,73 @@ public class MarkLogicOutput extends BaseStep implements StepInterface {
     Object[] r = getRow(); // get row, set busy!
 
     if ( null == r ) {
+      logRowlevel("Processing last MarkLogic row");
       // no more input to be expected...
 
       data.batcher.flushAndWait();
       data.dmm.stopJob( data.batcher );
+      logRowlevel("Processing last MarkLogic row completed");
       return false;
     }
 
     if ( first ) {
       first = false;
+      logRowlevel("Processing first MarkLogic row");
+      logRowlevel("Collection: " + meta.getCollection());
+      logRowlevel("Doc URI Field: " + meta.getDocumentUriField());
+      logRowlevel("Format Field: " + meta.getFormatField());
+      logRowlevel("Doc Content Field: " + meta.getDocumentContentField());
+      logRowlevel("Mime Type Field: " + meta.getMimeTypeField());
 
       data.outputRowMeta = getInputRowMeta().clone();
       meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
 
       // create connection
-      data.client = DatabaseClientFactory.newClient( meta.getHost( ), meta.getPort( ),
-        new DigestAuthContext( meta.getUsername( ), meta.getPassword( ) ) );
+      /*
+      data.client = DatabaseClientFactory.newClient( 
+        (String)meta.getDatabaseMeta().getAttributes().get(MarkLogicDatabaseMeta.ATTRIBUTE_HOST), 
+          Integer.parseInt((String)meta.getDatabaseMeta().getAttributes().get(MarkLogicDatabaseMeta.ATTRIBUTE_PORT)),
+        new DatabaseClientFactory.DigestAuthContext(
+          (String)meta.getDatabaseMeta().getAttributes().get(MarkLogicDatabaseMeta.ATTRIBUTE_USERNAME) , 
+          (String)meta.getDatabaseMeta().getAttributes().get(MarkLogicDatabaseMeta.ATTRIBUTE_PASSWORD) 
+        )
+      );
+      */
+      //String asString = (String) meta.getDatabaseMeta().getAttributes().get(MarkLogicDatabaseMeta.ATTRIBUTE_AUTHSCHEME);
+      //AuthScheme as = AuthScheme.DIGEST;
+      //if ("basic".equals(asString)) {
+      //  as = AuthScheme.BASIC;
+      //}
+      try {
+
+        //data.client = MarkLogicConnectionFactory.create(
+        //  (String) meta.getDatabaseMeta().getAttributes().get(MarkLogicDatabaseMeta.ATTRIBUTE_HOST),
+        //  Integer.parseInt((String) meta.getDatabaseMeta().getAttributes().get(MarkLogicDatabaseMeta.ATTRIBUTE_PORT)), 
+        //  as,
+        //  (String) meta.getDatabaseMeta().getAttributes().get(MarkLogicDatabaseMeta.ATTRIBUTE_USERNAME),
+        //  (String) meta.getDatabaseMeta().getAttributes().get(MarkLogicDatabaseMeta.ATTRIBUTE_PASSWORD)
+        //);
+        data.client = ((MarkLogicDatabaseMeta)meta.getDatabaseMeta().getDatabaseInterface()).getConnection();
+      } catch (Exception e) {
+        logError(BaseMessages.getString(PKG, "MarkLogicOutput.Log.CannotConnect"),e);
+      }
+
+      //data.client = ((MarkLogicDatabaseMeta)meta.getDatabaseMeta()).getConnection();
+
+      // TODO redirect MarkLogic logger to our row level logger (somehow...)
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      RequestLogger rl = data.client.newLogger( baos );
+      rl.setEnabled( false );
 
       data.dmm = data.client.newDataMovementManager( );
+
       data.batcher = data.dmm.newWriteBatcher( );
 
       data.batcher.withBatchSize( 100 ).withThreadCount( 3 ); // no lambdas today
 
       // start the job and feed input to the batcher
       data.dmm.startJob( data.batcher );
+      logRowlevel("Processing first MarkLogic row completed");
 
     } // end if for first row (initialisation based on row data)
 
@@ -105,17 +155,21 @@ public class MarkLogicOutput extends BaseStep implements StepInterface {
       // got URI
       uri = (String) r[docUriFieldId];
     }
+    logRowlevel("DocUri: " + uri);
     String docFormat = (String) r[data.inputRowMeta.indexOfValue( meta.getFormatField() ) ];
+    logRowlevel("DocFormat: " + docFormat);
     String docContent = (String) r[data.inputRowMeta.indexOfValue( meta.getDocumentContentField() ) ];
+    logRowlevel("DocContent: " + docContent );
     String docMime = (String) r[data.inputRowMeta.indexOfValue( meta.getMimeTypeField() ) ];
+    logRowlevel("DocMime: " + docMime );
 
     // now load JSON / XML / text
     StringHandle handle = new StringHandle( docContent );
-    //if (null != uri) {
-    data.batcher.add( uri, handle );
-    //} else {
-    //  data.batcher.add(handle);
-    //}
+    if (null != uri) {
+      data.batcher.add( uri, new DocumentMetadataHandle().withCollections(meta.getCollection()),handle );
+    ////} else {
+    ////  data.batcher.add(handle);
+    }
     // TODO handle binary
 
 

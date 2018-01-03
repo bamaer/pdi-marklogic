@@ -4,13 +4,13 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.pentaho.kettle</groupId>
   <artifactId>pdi-marklogic</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>8.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>pdi-marklogic</name>
   <url>http://maven.apache.org</url>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <pentaho.kettle.version>6.1.0.1-196</pentaho.kettle.version>
+    <pentaho.kettle.version>8.0-SNAPSHOT</pentaho.kettle.version>
   </properties>
   <build>
     <plugins>
