@@ -20,35 +20,31 @@
  *
  ******************************************************************************/
 
-package org.pentaho.kettle.steps.marklogicoutput;
+package org.pentaho.kettle.steps.marklogicinput;
 
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
-import com.marklogic.client.io.*;
-import com.marklogic.client.datamovement.DataMovementManager;
-import com.marklogic.client.datamovement.WriteBatcher;
-import com.marklogic.client.DatabaseClientFactory;
 import com.marklogic.client.DatabaseClient;
-import com.marklogic.client.DatabaseClientFactory.DigestAuthContext;
+import com.marklogic.client.datamovement.DataMovementManager;
+import com.marklogic.client.datamovement.QueryBatcher;
 
 /**
  * Runtime transient data container for the PDI BigQuery stream step
  * 
- * @author afowler
- * @since 01-12-2017
+ * @author Adam Fowler {@literal <adam.fowler@marklogic.com>}
+ * @since 1.0 11-01-2018
  */
-public class MarkLogicOutputData extends BaseStepData implements StepDataInterface {
+public class MarkLogicInputData extends BaseStepData implements StepDataInterface {
   public RowMetaInterface outputRowMeta;
   public RowMetaInterface inputRowMeta;
 
   // in flight configuration objects here (E.g. batch handler
   public DatabaseClient client = null;
   public DataMovementManager dmm = null;
-  public WriteBatcher batcher = null;
+  public QueryBatcher batcher = null;
 
-  public int collectionFieldId = -1;
   public int docUriFieldId = -1;
   public int docContentFieldId = -1;
   public int mimeTypeFieldId = -1;
@@ -57,7 +53,7 @@ public class MarkLogicOutputData extends BaseStepData implements StepDataInterfa
   /**
    * Default constructor
    */
-  public MarkLogicOutputData() {
+  public MarkLogicInputData() {
     super();
   }
 
