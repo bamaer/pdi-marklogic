@@ -87,14 +87,36 @@ public class MarkLogicOutput extends BaseStep implements StepInterface {
     if ( first ) {
       first = false;
       logRowlevel("Processing first MarkLogic row");
-      logRowlevel("Collection: " + meta.getCollection());
+      logRowlevel("Collection Field: " + meta.getCollectionField());
       logRowlevel("Doc URI Field: " + meta.getDocumentUriField());
       logRowlevel("Format Field: " + meta.getFormatField());
       logRowlevel("Doc Content Field: " + meta.getDocumentContentField());
       logRowlevel("Mime Type Field: " + meta.getMimeTypeField());
 
+      data.inputRowMeta = getInputRowMeta();
       data.outputRowMeta = getInputRowMeta().clone();
       meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+
+      String collectionField = meta.getCollectionField();
+      if (null != collectionField) {
+        data.collectionFieldId = data.inputRowMeta.indexOfValue(collectionField);
+      }
+      String docUriField = meta.getDocumentUriField();
+      if (null != docUriField) {
+        data.docUriFieldId = data.inputRowMeta.indexOfValue(docUriField);
+      }
+      String docContentField = meta.getDocumentContentField();
+      if (null != docContentField) {
+        data.docContentFieldId = data.inputRowMeta.indexOfValue(docContentField);
+      }
+      String mimeType = meta.getMimeTypeField();
+      if (null != mimeType) {
+        data.mimeTypeFieldId = data.inputRowMeta.indexOfValue(mimeType);
+      }
+      String format = meta.getFormatField();
+      if (null != format) {
+        data.formatFieldId = data.inputRowMeta.indexOfValue(format);
+      }
 
       // create connection
       /*
@@ -149,24 +171,23 @@ public class MarkLogicOutput extends BaseStep implements StepInterface {
     data.inputRowMeta = getInputRowMeta();
 
     // TODO replace the below with fetching the four fields we care about
-    int docUriFieldId = data.inputRowMeta.indexOfValue( meta.getDocumentUriField() );
     String uri = null;
-    if ( -1 != docUriFieldId ) {
+    if ( -1 != data.docUriFieldId ) {
       // got URI
-      uri = (String) r[docUriFieldId];
+      uri = (String) r[data.docUriFieldId];
     }
-    logRowlevel("DocUri: " + uri);
-    String docFormat = (String) r[data.inputRowMeta.indexOfValue( meta.getFormatField() ) ];
-    logRowlevel("DocFormat: " + docFormat);
-    String docContent = (String) r[data.inputRowMeta.indexOfValue( meta.getDocumentContentField() ) ];
-    logRowlevel("DocContent: " + docContent );
-    String docMime = (String) r[data.inputRowMeta.indexOfValue( meta.getMimeTypeField() ) ];
-    logRowlevel("DocMime: " + docMime );
+    //logRowlevel("DocUri: " + uri);
+    String docFormat = (String) r[data.formatFieldId ];
+    //logRowlevel("DocFormat: " + docFormat);
+    String docContent = (String) r[data.docContentFieldId ];
+    //logRowlevel("DocContent: " + docContent );
+    String docMime = (String) r[data.mimeTypeFieldId];
+    //logRowlevel("DocMime: " + docMime );
 
     // now load JSON / XML / text
     StringHandle handle = new StringHandle( docContent );
     if (null != uri) {
-      data.batcher.add( uri, new DocumentMetadataHandle().withCollections(meta.getCollection()),handle );
+      data.batcher.add( uri, new DocumentMetadataHandle().withCollections((String)r[data.collectionFieldId]),handle );
     ////} else {
     ////  data.batcher.add(handle);
     }

@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.kettle.steps.marklogicoutput;
+package org.pentaho.kettle.steps.marklogicinput;
 
 import org.pentaho.di.core.database.marklogic.MarkLogicDatabaseMeta;
 
@@ -57,15 +57,15 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- * Dialog box for the MarkLogic output step
+ * Dialog box for the MarkLogic input step
  * 
- * @author afowler
- * @since 21-12-2017
+ * @author Adam Fowler {@literal <adam.fowler@marklogic.com>}
+ * @since 1.0 11-01-2018
  */
-public class MarkLogicOutputDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = MarkLogicOutputMeta.class; // for i18n purposes, needed by Translator2!!
+public class MarkLogicInputDialog extends BaseStepDialog implements StepDialogInterface {
+  private static Class<?> PKG = MarkLogicInputMeta.class; // for i18n purposes, needed by Translator2!!
 
-  private MarkLogicOutputMeta input;
+  private MarkLogicInputMeta input;
 
   private Label wlName;
   private Text wName;
@@ -73,19 +73,19 @@ public class MarkLogicOutputDialog extends BaseStepDialog implements StepDialogI
   private FormData fdlName, fdName;
 
   private CCombo wConnection;
-/*
+  /*
   private Label cplName;
   private Text cpName;
   private FormData fcplName, fcpName;
-
+  
   private Label plName;
   private Text pName;
   private FormData fplName, fpName;
-
+  
   private Label dslName;
   private Text dsName;
   private FormData fdslName, fdsName;
-
+  
   private Label tlName;
   private Text tName;
   private FormData ftlName, ftName;
@@ -128,9 +128,9 @@ public class MarkLogicOutputDialog extends BaseStepDialog implements StepDialogI
   /**
    * Standard PDI dialog constructor
    */
-  public MarkLogicOutputDialog(Shell parent, Object in, TransMeta tr, String sname) {
+  public MarkLogicInputDialog(Shell parent, Object in, TransMeta tr, String sname) {
     super(parent, (BaseStepMeta) in, tr, sname);
-    input = (MarkLogicOutputMeta) in;
+    input = (MarkLogicInputMeta) in;
   }
 
   /**
@@ -162,14 +162,14 @@ public class MarkLogicOutputDialog extends BaseStepDialog implements StepDialogI
     formLayout.marginHeight = Const.FORM_MARGIN;
 
     shell.setLayout(formLayout);
-    shell.setText(BaseMessages.getString(PKG, "MarkLogicOutput.Title"));
+    shell.setText(BaseMessages.getString(PKG, "MarkLogicInput.Title"));
 
     int middle = props.getMiddlePct();
     int margin = Const.MARGIN;
 
     // Step Name
     wlName = new Label(shell, SWT.RIGHT);
-    wlName.setText(BaseMessages.getString(PKG, "MarkLogicOutput.Name.Label"));
+    wlName.setText(BaseMessages.getString(PKG, "MarkLogicInput.Name.Label"));
     props.setLook(wlName);
     fdlName = new FormData();
     fdlName.left = new FormAttachment(0, 0);
@@ -177,7 +177,7 @@ public class MarkLogicOutputDialog extends BaseStepDialog implements StepDialogI
     fdlName.top = new FormAttachment(0, margin);
     wlName.setLayoutData(fdlName);
     wName = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-    wName.setToolTipText(BaseMessages.getString(PKG, "MarkLogicOutput.Name.Tooltip"));
+    wName.setToolTipText(BaseMessages.getString(PKG, "MarkLogicInput.Name.Tooltip"));
     props.setLook(wName);
     wName.addModifyListener(lsMod);
     fdName = new FormData();
@@ -187,7 +187,7 @@ public class MarkLogicOutputDialog extends BaseStepDialog implements StepDialogI
     wName.setLayoutData(fdName);
 
     // Database Connection
-    
+
     wConnection = addConnectionLine(shell, wName, middle, margin);
     List<String> items = new ArrayList<String>();
     for (DatabaseMeta dbMeta : transMeta.getDatabases()) {
@@ -204,7 +204,7 @@ public class MarkLogicOutputDialog extends BaseStepDialog implements StepDialogI
     /*
     // Hostname
     cplName = new Label(shell, SWT.RIGHT);
-    cplName.setText(BaseMessages.getString(PKG, "MarkLogicOutput.Hostname.Label"));
+    cplName.setText(BaseMessages.getString(PKG, "MarkLogicInput.Hostname.Label"));
     props.setLook(cplName);
     fcplName = new FormData();
     fcplName.left = new FormAttachment(0, 0);
@@ -212,7 +212,7 @@ public class MarkLogicOutputDialog extends BaseStepDialog implements StepDialogI
     fcplName.top = new FormAttachment(wName, margin);
     cplName.setLayoutData(fcplName);
     cpName = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-    cpName.setToolTipText(BaseMessages.getString(PKG, "MarkLogicOutput.Hostname.Tooltip"));
+    cpName.setToolTipText(BaseMessages.getString(PKG, "MarkLogicInput.Hostname.Tooltip"));
     props.setLook(cpName);
     cpName.addModifyListener(lsMod);
     fcpName = new FormData();
@@ -220,10 +220,10 @@ public class MarkLogicOutputDialog extends BaseStepDialog implements StepDialogI
     fcpName.top = new FormAttachment(wName, margin);
     fcpName.right = new FormAttachment(100, 0);
     cpName.setLayoutData(fcpName);
-
+    
     // port
     plName = new Label(shell, SWT.RIGHT);
-    plName.setText(BaseMessages.getString(PKG, "MarkLogicOutput.Port.Label"));
+    plName.setText(BaseMessages.getString(PKG, "MarkLogicInput.Port.Label"));
     props.setLook(plName);
     fplName = new FormData();
     fplName.left = new FormAttachment(0, 0);
@@ -231,7 +231,7 @@ public class MarkLogicOutputDialog extends BaseStepDialog implements StepDialogI
     fplName.top = new FormAttachment(cpName, margin);
     plName.setLayoutData(fplName);
     pName = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-    pName.setToolTipText(BaseMessages.getString(PKG, "MarkLogicOutput.Port.Tooltip"));
+    pName.setToolTipText(BaseMessages.getString(PKG, "MarkLogicInput.Port.Tooltip"));
     props.setLook(pName);
     pName.addModifyListener(lsMod);
     fpName = new FormData();
@@ -239,10 +239,10 @@ public class MarkLogicOutputDialog extends BaseStepDialog implements StepDialogI
     fpName.top = new FormAttachment(cpName, margin);
     fpName.right = new FormAttachment(100, 0);
     pName.setLayoutData(fpName);
-
+    
     // Username
     dslName = new Label(shell, SWT.RIGHT);
-    dslName.setText(BaseMessages.getString(PKG, "MarkLogicOutput.Username.Label"));
+    dslName.setText(BaseMessages.getString(PKG, "MarkLogicInput.Username.Label"));
     props.setLook(dslName);
     fdslName = new FormData();
     fdslName.left = new FormAttachment(0, 0);
@@ -250,7 +250,7 @@ public class MarkLogicOutputDialog extends BaseStepDialog implements StepDialogI
     fdslName.top = new FormAttachment(pName, margin);
     dslName.setLayoutData(fdslName);
     dsName = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-    dsName.setToolTipText(BaseMessages.getString(PKG, "MarkLogicOutput.Username.Tooltip"));
+    dsName.setToolTipText(BaseMessages.getString(PKG, "MarkLogicInput.Username.Tooltip"));
     props.setLook(dsName);
     dsName.addModifyListener(lsMod);
     fdsName = new FormData();
@@ -258,10 +258,10 @@ public class MarkLogicOutputDialog extends BaseStepDialog implements StepDialogI
     fdsName.top = new FormAttachment(pName, margin);
     fdsName.right = new FormAttachment(100, 0);
     dsName.setLayoutData(fdsName);
-
+    
     // Password
     tlName = new Label(shell, SWT.RIGHT);
-    tlName.setText(BaseMessages.getString(PKG, "MarkLogicOutput.Password.Label"));
+    tlName.setText(BaseMessages.getString(PKG, "MarkLogicInput.Password.Label"));
     props.setLook(tlName);
     ftlName = new FormData();
     ftlName.left = new FormAttachment(0, 0);
@@ -269,7 +269,7 @@ public class MarkLogicOutputDialog extends BaseStepDialog implements StepDialogI
     ftlName.top = new FormAttachment(dsName, margin);
     tlName.setLayoutData(ftlName);
     tName = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-    tName.setToolTipText(BaseMessages.getString(PKG, "MarkLogicOutput.Password.Tooltip"));
+    tName.setToolTipText(BaseMessages.getString(PKG, "MarkLogicInput.Password.Tooltip"));
     props.setLook(tName);
     tName.addModifyListener(lsMod);
     ftName = new FormData();
@@ -277,29 +277,29 @@ public class MarkLogicOutputDialog extends BaseStepDialog implements StepDialogI
     ftName.top = new FormAttachment(dsName, margin);
     ftName.right = new FormAttachment(100, 0);
     tName.setLayoutData(ftName);
-*/
+    */
     // collection field
     lblCollection = new Label(shell, SWT.RIGHT);
-    lblCollection.setText(BaseMessages.getString(PKG, "MarkLogicOutput.Collection.Label"));
+    lblCollection.setText(BaseMessages.getString(PKG, "MarkLogicInput.Collection.Label"));
     props.setLook(lblCollection);
     flblCollection = new FormData();
     flblCollection.left = new FormAttachment(0, 0);
     flblCollection.right = new FormAttachment(middle, -margin);
-    flblCollection.top = new FormAttachment(wConnection, 2*margin);
+    flblCollection.top = new FormAttachment(wConnection, 2 * margin);
     lblCollection.setLayoutData(flblCollection);
     collection = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-    collection.setToolTipText(BaseMessages.getString(PKG, "MarkLogicOutput.Collection.Tooltip"));
+    collection.setToolTipText(BaseMessages.getString(PKG, "MarkLogicInput.Collection.Tooltip"));
     props.setLook(collection);
     collection.addModifyListener(lsMod);
     fcollection = new FormData();
     fcollection.left = new FormAttachment(middle, 0);
-    fcollection.top = new FormAttachment(wConnection, 2*margin);
+    fcollection.top = new FormAttachment(wConnection, 2 * margin);
     fcollection.right = new FormAttachment(100, 0);
     collection.setLayoutData(fcollection);
 
     // formatField
     lblFormat = new Label(shell, SWT.RIGHT);
-    lblFormat.setText(BaseMessages.getString(PKG, "MarkLogicOutput.FormatField.Label"));
+    lblFormat.setText(BaseMessages.getString(PKG, "MarkLogicInput.FormatField.Label"));
     props.setLook(lblFormat);
     flblFormat = new FormData();
     flblFormat.left = new FormAttachment(0, 0);
@@ -307,7 +307,7 @@ public class MarkLogicOutputDialog extends BaseStepDialog implements StepDialogI
     flblFormat.top = new FormAttachment(collection, margin);
     lblFormat.setLayoutData(flblFormat);
     format = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-    format.setToolTipText(BaseMessages.getString(PKG, "MarkLogicOutput.FormatField.Tooltip"));
+    format.setToolTipText(BaseMessages.getString(PKG, "MarkLogicInput.FormatField.Tooltip"));
     props.setLook(format);
     format.addModifyListener(lsMod);
     fformat = new FormData();
@@ -318,7 +318,7 @@ public class MarkLogicOutputDialog extends BaseStepDialog implements StepDialogI
 
     // mimeType field
     lblMime = new Label(shell, SWT.RIGHT);
-    lblMime.setText(BaseMessages.getString(PKG, "MarkLogicOutput.MimeField.Label"));
+    lblMime.setText(BaseMessages.getString(PKG, "MarkLogicInput.MimeField.Label"));
     props.setLook(lblMime);
     flblMime = new FormData();
     flblMime.left = new FormAttachment(0, 0);
@@ -326,7 +326,7 @@ public class MarkLogicOutputDialog extends BaseStepDialog implements StepDialogI
     flblMime.top = new FormAttachment(format, margin);
     lblMime.setLayoutData(flblMime);
     mime = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-    mime.setToolTipText(BaseMessages.getString(PKG, "MarkLogicOutput.MimeField.Tooltip"));
+    mime.setToolTipText(BaseMessages.getString(PKG, "MarkLogicInput.MimeField.Tooltip"));
     props.setLook(mime);
     mime.addModifyListener(lsMod);
     fmime = new FormData();
@@ -337,7 +337,7 @@ public class MarkLogicOutputDialog extends BaseStepDialog implements StepDialogI
 
     // documentUri Field
     lblDocUri = new Label(shell, SWT.RIGHT);
-    lblDocUri.setText(BaseMessages.getString(PKG, "MarkLogicOutput.DocUriField.Label"));
+    lblDocUri.setText(BaseMessages.getString(PKG, "MarkLogicInput.DocUriField.Label"));
     props.setLook(lblDocUri);
     flblDocUri = new FormData();
     flblDocUri.left = new FormAttachment(0, 0);
@@ -345,7 +345,7 @@ public class MarkLogicOutputDialog extends BaseStepDialog implements StepDialogI
     flblDocUri.top = new FormAttachment(mime, margin);
     lblDocUri.setLayoutData(flblDocUri);
     docUri = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-    docUri.setToolTipText(BaseMessages.getString(PKG, "MarkLogicOutput.DocUriField.Tooltip"));
+    docUri.setToolTipText(BaseMessages.getString(PKG, "MarkLogicInput.DocUriField.Tooltip"));
     props.setLook(docUri);
     docUri.addModifyListener(lsMod);
     fdocUri = new FormData();
@@ -356,7 +356,7 @@ public class MarkLogicOutputDialog extends BaseStepDialog implements StepDialogI
 
     // document Content field
     lblDocContent = new Label(shell, SWT.RIGHT);
-    lblDocContent.setText(BaseMessages.getString(PKG, "MarkLogicOutput.DocContentField.Label"));
+    lblDocContent.setText(BaseMessages.getString(PKG, "MarkLogicInput.DocContentField.Label"));
     props.setLook(lblDocContent);
     flblDocContent = new FormData();
     flblDocContent.left = new FormAttachment(0, 0);
@@ -364,7 +364,7 @@ public class MarkLogicOutputDialog extends BaseStepDialog implements StepDialogI
     flblDocContent.top = new FormAttachment(docUri, margin);
     lblDocContent.setLayoutData(flblDocContent);
     docContent = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-    docContent.setToolTipText(BaseMessages.getString(PKG, "MarkLogicOutput.DocContentField.Tooltip"));
+    docContent.setToolTipText(BaseMessages.getString(PKG, "MarkLogicInput.DocContentField.Tooltip"));
     props.setLook(docContent);
     docContent.addModifyListener(lsMod);
     fdocContent = new FormData();
@@ -414,7 +414,7 @@ public class MarkLogicOutputDialog extends BaseStepDialog implements StepDialogI
     BaseStepDialog.setSize(shell);
 
     shell.open();
-    props.setDialogSize(shell, "MarkLogicOutputDialogSize");
+    props.setDialogSize(shell, "MarkLogicInputDialogSize");
     while (!shell.isDisposed()) {
       if (!display.readAndDispatch()) {
         display.sleep();
@@ -434,7 +434,7 @@ public class MarkLogicOutputDialog extends BaseStepDialog implements StepDialogI
     } else if (transMeta.nrDatabases() == 1) {
       wConnection.setText(transMeta.getDatabase(0).getName());
     }
-    collection.setText(Const.nullToEmpty(input.getCollectionField()));
+    collection.setText(Const.nullToEmpty(input.getCollection()));
     format.setText(Const.nullToEmpty(input.getFormatField()));
     mime.setText(Const.nullToEmpty(input.getMimeTypeField()));
     docUri.setText(Const.nullToEmpty(input.getDocumentUriField()));
@@ -452,11 +452,11 @@ public class MarkLogicOutputDialog extends BaseStepDialog implements StepDialogI
     input.setChanged(changed);
     dispose();
   }
-  
+
   private int showDatabaseWarning(boolean includeCancel) {
     MessageBox mb = new MessageBox(shell, SWT.OK | (includeCancel ? SWT.CANCEL : SWT.NONE) | SWT.ICON_ERROR);
-    mb.setMessage(BaseMessages.getString(PKG, "MarkLogicOutputDialog.InvalidConnection.DialogMessage"));
-    mb.setText(BaseMessages.getString(PKG, "MarkLogicOutputDialog.InvalidConnection.DialogTitle"));
+    mb.setMessage(BaseMessages.getString(PKG, "MarkLogicInputDialog.InvalidConnection.DialogMessage"));
+    mb.setText(BaseMessages.getString(PKG, "MarkLogicInputDialog.InvalidConnection.DialogTitle"));
     return mb.open();
   }
 
@@ -486,7 +486,15 @@ public class MarkLogicOutputDialog extends BaseStepDialog implements StepDialogI
     //input.setPort(Integer.parseInt(pName.getText()));
     //input.setUsername(dsName.getText());
     //input.setPassword(tName.getText());
-    input.setCollectioField(collection.getText());
+    String collectionField = collection.getText();
+    if (null == collectionField || "".equals(collectionField.trim())) {
+      MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
+      mb.setText(BaseMessages.getString(PKG, "MarkLogicInputDialog.CollectionMissing.Title"));
+      mb.setMessage(BaseMessages.getString(PKG, "MarkLogicInputDialog.CollectionMissing.Msg"));
+      mb.open();
+      return;
+    }
+    input.setCollection(collectionField);
     input.setFormatField(format.getText());
     input.setMimeTypeField(mime.getText());
     input.setDocumentUriField(docUri.getText());
