@@ -81,6 +81,7 @@ public class MarkLogicOutput extends BaseStep implements StepInterface {
       data.batcher.flushAndWait();
       data.dmm.stopJob( data.batcher );
       logRowlevel("Processing last MarkLogic row completed");
+      setOutputDone();
       return false;
     }
 

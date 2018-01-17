@@ -83,6 +83,7 @@ public class MarkLogicInput extends BaseStep implements StepInterface {
       data.batcher.awaitCompletion();
 
       logRowlevel("Processing last MarkLogic row completed");
+      setOutputDone();
       return false;
     }
 
@@ -96,7 +97,11 @@ public class MarkLogicInput extends BaseStep implements StepInterface {
       logRowlevel("Mime Type Field: " + meta.getMimeTypeField());
 
       data.inputRowMeta = getInputRowMeta();
-      data.outputRowMeta = getInputRowMeta().clone();
+      data.outputRowMeta = data.inputRowMeta.clone();
+      Class c = data.inputRowMeta.getClass();
+      logDebug("input row meta class: " + c.getName());
+      c = data.outputRowMeta.getClass();
+      logDebug("output row meta clone class: " + c.getName());
       meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
 
       // get IDs of fields we require
@@ -167,12 +172,19 @@ public class MarkLogicInput extends BaseStep implements StepInterface {
         new ExportListener().onDocumentReady(doc -> {
           //logRowlevel("Retrieving MarkLogic Document: " + doc.getUri());
           // 1. Create new results row for output
+          Object[] outputRowData;
+          /*
           Object[] outputRowData = RowDataUtil.allocateRowData(data.outputRowMeta.size());
 
           // copy input fields to output fields
           for (int i = 0;i < outputRowData.length;i++) {
             outputRowData[i] = r[i];
-          }
+          }*/
+          
+          outputRowData = RowDataUtil.createResizedCopy(r, data.inputRowMeta.size()); //.outputRowMeta.size());
+
+          //logDebug("r row data num fields: " + r.length);
+          //logDebug("output row data num fields: " + outputRowData.length);
 
           // 2. Fill data in new result row
           String uri = doc.getUri();
@@ -218,7 +230,7 @@ public class MarkLogicInput extends BaseStep implements StepInterface {
     } // end if for first row (initialisation based on row data)
 
     // Do something to this row's data (create row for BigQuery, and append to current stream)
-    data.inputRowMeta = getInputRowMeta();
+    //data.inputRowMeta = getInputRowMeta();
 /*
     // TODO replace the below with fetching the four fields we care about
     int docUriFieldId = data.inputRowMeta.indexOfValue(meta.getDocumentUriField());
@@ -266,8 +278,6 @@ public class MarkLogicInput extends BaseStep implements StepInterface {
    * Initialises the data for the step (meta data and runtime data)
    */
   public boolean init(StepMetaInterface smi, StepDataInterface sdi) {
-    first = true;
-
     meta = (MarkLogicInputMeta) smi;
     data = (MarkLogicInputData) sdi;
 
@@ -277,4 +287,15 @@ public class MarkLogicInput extends BaseStep implements StepInterface {
     }
     return false;
   }
+  /*
+  @Override
+  public void dispose(StepMetaInterface smi, StepDataInterface sdi) {
+    meta = (MarkLogicInputMeta) smi;
+    data = (MarkLogicInputData) sdi;
+
+    logRowlevel("dispose called on MarkLogicInput step");
+
+    super.dispose(smi, sdi);
+  }
+  */
 }
