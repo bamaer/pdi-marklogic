@@ -34,3 +34,11 @@ This step will use batch asynchronous writing to create new documents in MarkLog
 - Document URI field (optional)
 - Document content field - The field containing JSON/XML for the document
 - Document properties field (optional) - The field containing JSON/XML for the document's properties fragment
+
+## License and Copyright
+
+All material in this repository are Copyright 2002-2018 Hitachi Vantara. All code is licensed as Apache 2.0 unless explicitly stated. See the LICENSE file for more details.
+
+## Support Statement
+
+This work is at Stage 1 : Development Phase: Start-up phase of an internal project. Usually a Labs experiment. (Unsupported)
