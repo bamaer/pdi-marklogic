@@ -65,6 +65,9 @@ public class MarkLogicInput extends BaseStep implements StepInterface {
   public MarkLogicInput(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
       Trans trans) {
     super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
+
+    meta = (MarkLogicInputMeta) getStepMeta().getStepMetaInterface();
+    data = (MarkLogicInputData) stepDataInterface;
   }
 
   /**
@@ -96,8 +99,8 @@ public class MarkLogicInput extends BaseStep implements StepInterface {
       logRowlevel("Doc Content Field: " + meta.getDocumentContentField());
       logRowlevel("Mime Type Field: " + meta.getMimeTypeField());
 
-      data.inputRowMeta = getInputRowMeta();
-      data.outputRowMeta = data.inputRowMeta.clone();
+      data.inputRowMeta = getInputRowMeta().clone();
+      data.outputRowMeta = getInputRowMeta().clone();
       Class c = data.inputRowMeta.getClass();
       logDebug("input row meta class: " + c.getName());
       c = data.outputRowMeta.getClass();
@@ -180,8 +183,8 @@ public class MarkLogicInput extends BaseStep implements StepInterface {
           for (int i = 0;i < outputRowData.length;i++) {
             outputRowData[i] = r[i];
           }*/
-          
-          outputRowData = RowDataUtil.createResizedCopy(r, data.inputRowMeta.size()); //.outputRowMeta.size());
+
+          outputRowData = RowDataUtil.createResizedCopy(r, data.outputRowMeta.size()); //.outputRowMeta.size());
 
           //logDebug("r row data num fields: " + r.length);
           //logDebug("output row data num fields: " + outputRowData.length);
@@ -287,15 +290,26 @@ public class MarkLogicInput extends BaseStep implements StepInterface {
     }
     return false;
   }
-  /*
+  
   @Override
   public void dispose(StepMetaInterface smi, StepDataInterface sdi) {
-    meta = (MarkLogicInputMeta) smi;
-    data = (MarkLogicInputData) sdi;
+    //meta = (MarkLogicInputMeta) smi;
+    //data = (MarkLogicInputData) sdi;
+
+    //data.outputRowData = null;
+    data.outputRowMeta = null;
+    data.inputRowMeta = null;
+    data.client = null;
+    data.batcher = null;
+    data.dmm = null;
+    data.docUriFieldId = -1;
+    data.docContentField = -1;
+    data.mimeTypeFieldId = -1;
+    data.formatFieldId = -1;
 
     logRowlevel("dispose called on MarkLogicInput step");
 
     super.dispose(smi, sdi);
   }
-  */
+  
 }
