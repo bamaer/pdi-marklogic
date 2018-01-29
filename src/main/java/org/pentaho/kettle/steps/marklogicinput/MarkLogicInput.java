@@ -34,6 +34,10 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMeta;
 
 import com.marklogic.client.datamovement.ExportListener;
 import com.marklogic.client.io.StringHandle;
@@ -44,6 +48,7 @@ import com.marklogic.client.io.DocumentMetadataHandle;
 import com.marklogic.client.util.RequestLogger;
 
 import java.io.ByteArrayOutputStream;
+import java.util.List;
 
 /**
  * MarkLogic Document Input Step
@@ -57,7 +62,7 @@ public class MarkLogicInput extends BaseStep implements StepInterface {
   private MarkLogicInputMeta meta;
   private MarkLogicInputData data;
 
-  private boolean first = true;
+  //private boolean first = true;
 
   /**
    * Standard constructor
@@ -99,16 +104,42 @@ public class MarkLogicInput extends BaseStep implements StepInterface {
       logRowlevel("Doc Content Field: " + meta.getDocumentContentField());
       logRowlevel("Mime Type Field: " + meta.getMimeTypeField());
 
-      data.inputRowMeta = getInputRowMeta().clone();
-      data.outputRowMeta = getInputRowMeta().clone();
-      Class c = data.inputRowMeta.getClass();
-      logDebug("input row meta class: " + c.getName());
-      c = data.outputRowMeta.getClass();
-      logDebug("output row meta clone class: " + c.getName());
-      meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
+      data.inputRowMeta = getInputRowMeta();//.clone();
+      //data.outputRowMeta = getInputRowMeta().clone();
+      //data.outputRowMeta = new RowMeta();
+      //Class c = data.inputRowMeta.getClass();
+      //logDebug("input row meta class: " + c.getName());
+      //c = data.outputRowMeta.getClass();
+      //logDebug("output row meta clone class: " + c.getName());
+      meta.getFields( getInputRowMeta(), getStepname(), null, null, this, repository, metaStore );
+      data.outputRowMeta = getInputRowMeta().clone(); // modified by previous step (getFields), so MUST be called AFTER it
+
+      // copy field definitions over from input to output (as per field analysis plugin)
+
+      //data.outputRowMeta = new RowMeta();
+      /*
+      RowMetaInterface irm = getInputRowMeta();
+      List<ValueMetaInterface> ml = irm.getValueMetaList();
+      for (ValueMetaInterface vmi: ml) {
+        logRowlevel("Value Meta: " + vmi.getName());
+        data.outputRowMeta.addValueMeta(vmi);
+      }
+      */
+      /*
+      data.outputRowMeta.addValueMeta(new ValueMeta( "Collection", ValueMetaInterface.TYPE_STRING ));
+      data.outputRowMeta.addValueMeta(new ValueMeta( "Content", ValueMetaInterface.TYPE_STRING ));
+      data.outputRowMeta.addValueMeta(new ValueMeta( "MimeType", ValueMetaInterface.TYPE_STRING ));
+      data.outputRowMeta.addValueMeta(new ValueMeta( "Format", ValueMetaInterface.TYPE_STRING ));
+      data.outputRowMeta.addValueMeta(new ValueMeta( "Uri", ValueMetaInterface.TYPE_STRING ));
+      data.outputRowMeta.addValueMeta(new ValueMeta( "OK", ValueMetaInterface.TYPE_STRING ));
+      */
+      
 
       // get IDs of fields we require
-
+      String colField = meta.getCollection();
+      if (null != colField) {
+        data.collectionFieldId = data.inputRowMeta.indexOfValue(colField);
+      }
       String docUriField = meta.getDocumentUriField();
       if (null != docUriField) {
         data.docUriFieldId = data.inputRowMeta.indexOfValue(docUriField);
@@ -171,6 +202,7 @@ public class MarkLogicInput extends BaseStep implements StepInterface {
         qb.collection((String) r[data.inputRowMeta.indexOfValue(meta.getCollection())] ) 
       );
 
+// TODO add batchcount and threadcount to ML database config
       data.batcher.withConsistentSnapshot().withBatchSize(100).withThreadCount(3).onUrisReady(
         new ExportListener().onDocumentReady(doc -> {
           //logRowlevel("Retrieving MarkLogic Document: " + doc.getUri());
@@ -184,7 +216,8 @@ public class MarkLogicInput extends BaseStep implements StepInterface {
             outputRowData[i] = r[i];
           }*/
 
-          outputRowData = RowDataUtil.createResizedCopy(r, data.outputRowMeta.size()); //.outputRowMeta.size());
+          outputRowData = RowDataUtil.createResizedCopy(r, data.outputRowMeta.size() ); //.outputRowMeta.size());
+          //outputRowData = r;
 
           //logDebug("r row data num fields: " + r.length);
           //logDebug("output row data num fields: " + outputRowData.length);
@@ -194,11 +227,15 @@ public class MarkLogicInput extends BaseStep implements StepInterface {
           if (-1 != data.docUriFieldId) {
             outputRowData[data.docUriFieldId] = uri;
           }
+          //String collection = (String)r[data.collectionFieldId];
+          //if (-1 != data.collectionFieldId) {
+            //outputRowData[data.collectionFieldId] = collection;
+          //}
           if (-1 != data.mimeTypeFieldId) {
-            outputRowData[data.mimeTypeFieldId] = doc.getMimetype();
+            outputRowData[data.mimeTypeFieldId] = (String)doc.getMimetype();
           }
           if (-1 != data.formatFieldId) {
-            outputRowData[data.formatFieldId] = doc.getFormat();
+            outputRowData[data.formatFieldId] = (String)doc.getFormat().toString();
           }
           //String uriParts[] = doc.getUri().split("/");
           // check that content was requested (not just URIs or metadata)
@@ -216,6 +253,8 @@ public class MarkLogicInput extends BaseStep implements StepInterface {
               e.printStackTrace();
             }
           } // end if content requested if
+
+          //outputRowData[5] = Boolean.TRUE;
 
           // 3. putRow
           try {
@@ -303,7 +342,7 @@ public class MarkLogicInput extends BaseStep implements StepInterface {
     data.batcher = null;
     data.dmm = null;
     data.docUriFieldId = -1;
-    data.docContentField = -1;
+    data.docContentFieldId = -1;
     data.mimeTypeFieldId = -1;
     data.formatFieldId = -1;
 

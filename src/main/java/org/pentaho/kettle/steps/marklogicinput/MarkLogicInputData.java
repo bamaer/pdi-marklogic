@@ -45,6 +45,7 @@ public class MarkLogicInputData extends BaseStepData implements StepDataInterfac
   public DataMovementManager dmm = null;
   public QueryBatcher batcher = null;
 
+  public int collectionFieldId = -1;
   public int docUriFieldId = -1;
   public int docContentFieldId = -1;
   public int mimeTypeFieldId = -1;

@@ -35,6 +35,7 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -113,9 +114,63 @@ public class MarkLogicInputMeta extends BaseStepMeta implements StepMetaInterfac
    * Adds any additional fields to the stream
    */
   public void getFields(RowMetaInterface r, String origin, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space) {
+      VariableSpace space) throws KettleStepException {
     // we don't add any, so leave blank
     // TODO add options for http status (success/failure) fields per document / row
+    //super.getFields(r,origin,info,nextStep,space);
+
+    // copy over existing meta
+    // set ALL output fields (E.g. Content) to have an origin of this step name
+    //r.clear();
+    //RowMeta row = new RowMeta();
+    /*
+    List<ValueMetaInterface> ml = r.getValueMetaList();
+    //int idx = 0;
+    for (ValueMetaInterface vmi: ml) {
+      logRowlevel("Value Meta: " + vmi.getName());
+      if (documentContentField.equals(vmi.getName())) { 
+        // THIS IS OUR OUTPUT FIELD - WE MUST SET ITS ORIGIN TO THIS STEP
+        ValueMeta vm = new ValueMeta(vmi.getName(),vmi.getType());
+        vm.setOrigin(origin);
+        row.addValueMeta(vm);
+      } else {
+        row.addValueMeta(vmi.clone());
+      }
+    }
+    */
+    
+/*
+    ValueMeta ok = new ValueMeta("OK",ValueMetaInterface.TYPE_STRING);
+    ok.setOrigin(origin);
+    row.addValueMeta(ok);
+*/
+    //if (!Utils.empty(documentContentField)) {
+      /*
+      ValueMeta vm;
+      vm = new ValueMeta(documentUriField,ValueMetaInterface.TYPE_STRING);
+      vm.setOrigin(origin);
+      row.addValueMeta(vm);
+      vm = new ValueMeta(collection,ValueMetaInterface.TYPE_STRING);
+      vm.setOrigin(origin);
+      row.addValueMeta(vm);
+      vm = new ValueMeta(mimeTypeField,ValueMetaInterface.TYPE_STRING);
+      vm.setOrigin(origin);
+      row.addValueMeta(vm);
+      vm = new ValueMeta(formatField,ValueMetaInterface.TYPE_STRING);
+      vm.setOrigin(origin);
+      row.addValueMeta(vm);
+      vm = new ValueMeta(documentContentField,ValueMetaInterface.TYPE_STRING);
+      vm.setOrigin(origin);
+      row.addValueMeta(vm);
+      //vm = new ValueMeta("Success",ValueMetaInterface.TYPE_BOOLEAN);
+      //vm.setOrigin(origin);
+      //row.addValueMeta(vm);
+      */
+    //}
+    //r.clear();
+    //r.addRowMeta(row);
+
+    // We neither add or remove fields, and so we don't need to do anything here (CONFIRMED VIA EXTENSIVE TESTING)
   }
 
   /**
