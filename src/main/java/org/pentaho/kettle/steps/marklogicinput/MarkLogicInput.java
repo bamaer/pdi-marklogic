@@ -53,7 +53,7 @@ import java.util.List;
 /**
  * MarkLogic Document Input Step
  *
- * @author Adam Fowler {@literal <adam.fowler@marklogic.com>}
+ * @author Adam Fowler {@literal <adam.fowler@hitachivantara.com>}
  * @since 1.0 11-01-2018
  */
 public class MarkLogicInput extends BaseStep implements StepInterface {
