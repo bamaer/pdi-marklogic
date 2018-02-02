@@ -59,7 +59,7 @@ import org.w3c.dom.Node;
 /**
  * Metadata (configuration) holding class for the MarkLogic input step
  * 
- * @author Adam Fowler {@literal <adam.fowler@marklogic.com>}
+ * @author Adam Fowler {@literal <adam.fowler@hitachivantara.com>}
  * @since 1.0 11-01-2018
  */
 public class MarkLogicInputMeta extends BaseStepMeta implements StepMetaInterface {
