@@ -8,14 +8,19 @@ MarkLogic steps for Pentaho Data Integration. Uses MarkLogic's Data Movement SDK
 
 ## Installation
 
-Easiest way is to download the binary release.
+Esaiest way is via the Pentaho Marketplace:-
+- Open Pentaho Data Integration (aka Spoon)
+- Open the Tools menu and select Marketplace
+- Type in 'MarkLogic' in the search bar
+- Install the plugin using the Install link
+- Restart Pentaho Data Integration
+- You will find the MarkLogic steps under the 'Big Data' folder
+
+Second easiest way is to download the binary release.
 
 - Fetch the latest release from here: https://github.com/Pentaho-SE-EMEA-APAC/pdi-marklogic/releases 
 - Unzip the zip file
 - Take the 'pdi-marklogic' folder and drop in to PENTAHO_HOME/design-tools/data-integration/plugins
-- Download the MarkLogic Java SDK zip file from here: http://developer.marklogic.com/products/java 
-- Extract the contents of the zip file
-- Copy the lib/*.jar files - EXCEPT the slf4j jar - to the plugins/pdi-marklogic/lib folder (create this subfolder if it does not exist)
 - Restart PDI/Spoon
 - You will find the MarkLogic steps under the 'Big Data' folder
 
@@ -30,13 +35,13 @@ Create a new Database Connection in PDI - you MUST use the Wizard for this. Sele
 - Host - The MarkLogic Server hostname
 - Port - MarkLogic REST API port (use 8000 by default)
 - Database - Type 'Documents', or your preferred MarkLogic database name (must already exist)
-- Authentication scheme - 'digest' by default in MarkLogic Server
+- Authentication scheme - 'digest' by default in MarkLogic Server (This field is only visible via the database Wizard interface)
 - Username - access username
 - Password - access password
 
 When configuring one of the individual steps, you will type in the below fields:-
 
-- Connection - Browse to the connection, or create one by clicking 'Wizard'
+- Connection - Browse to the connection, or create one by clicking 'Wizard' (NOT 'New')
 - Collection name field - Which PDI field holds the collection name
 - Format field - High level MarkLogic Format - XML, JSON, TEXT, BINARY (Default: JSON)
 - Content Type field - MIME type of the document (Default: application/json)
@@ -48,7 +53,7 @@ You will now be able to execute your transformation.
 
 ## License and Copyright
 
-All material in this repository are Copyright 2002-2018 Hitachi Vantara. All code is licensed as Apache 2.0 unless explicitly stated. See the LICENSE file for more details.
+All material in this repository are Copyright 2002-2018 Hitachi Vantara. All code is licensed as Apache 2.0 unless explicitly stated. See the LICENSE file for more details. The MarkLogic Java Client API Connector included in the binary release package is also licensed as Apache 2.0, and is copyright MarkLogic Inc.
 
 ## Support Statement
 
