@@ -33,7 +33,7 @@ import com.marklogic.client.datamovement.QueryBatcher;
 /**
  * Runtime transient data container for the PDI BigQuery stream step
  * 
- * @author Adam Fowler {@literal <adam.fowler@marklogic.com>}
+ * @author Adam Fowler {@literal <adam.fowler@hitachivantara.com>}
  * @since 1.0 11-01-2018
  */
 public class MarkLogicInputData extends BaseStepData implements StepDataInterface {
@@ -45,6 +45,7 @@ public class MarkLogicInputData extends BaseStepData implements StepDataInterfac
   public DataMovementManager dmm = null;
   public QueryBatcher batcher = null;
 
+  public int collectionFieldId = -1;
   public int docUriFieldId = -1;
   public int docContentFieldId = -1;
   public int mimeTypeFieldId = -1;

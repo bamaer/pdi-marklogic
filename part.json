@@ -1,0 +1,72 @@
+{
+  "identifier": "pdi-marklogic",
+  "title": "PDI MarkLogic Server Plugins",
+  "description": "PDI Steps for integrating to the MarkLogic Server NoSQL database",
+  "version": "1.0.0",
+  "type": "pdi",
+  "elements": [
+    "pdi-transformation",
+    "pdi-sample-data",
+    "other"
+  ],
+  "other-elements": "PDI Custom Step",
+  "pentaho-minimum-version": "8.0",
+  "pentaho-maximum-version": "none",
+  "data-sources": [
+    "flatfile-csv",
+    "flatfile-other",
+    "rest-other"
+  ],
+  "other-data-sources": "MarkLogic Server, XML, CSV, Avro, Json",
+  "deployment-environments": [
+    "local"
+  ],
+  "in-pentaho-demo-vm-version": "none",
+  "date-created": "2018-01-24",
+  "date-updated": "2018-01-24",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Pentaho-SE-EMEA-APAC/pdi-marklogic.git",
+    "public": "true"
+  },
+  "tags": [
+    "marklogic",
+    "pentaho",
+    "pdi",
+    "data-integration",
+    "spoon",
+    "csv",
+    "avro",
+    "json",
+    "rest",
+    "NoSQL",
+    "xml"
+  ],
+  "license": "Apache-2.0",
+  "primary-owner": {
+    "name": "Adam Fowler",
+    "email": "adam.fowler@hitachivantara.com",
+    "twitter": "@adamfowleruk",
+    "homepage": "http://adamfowler.org/",
+    "github": "adamfowleruk"
+  },
+  "backup-owners": [],
+  "antiquated": "false",
+  "needs-new-owner": "false",
+  "new-owner-information": "",
+  "documentation": {
+    "homepage": "README.md",
+    "install": "README.md",
+    "errata": "https://github.com/Pentaho-SE-EMEA-APAC/pdi-marklogic/issues",
+    "readme": "README.md",
+    "script": "",
+    "video": ""
+  },
+  "dependencies": {
+    "part": "^1.0.0"
+  },
+  "layout": "local",
+  "languages": [
+    "en"
+  ]
+}
